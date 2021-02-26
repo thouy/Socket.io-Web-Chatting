@@ -1,0 +1,20 @@
+{
+  "name": "web_chatting",
+  "version": "1.0.0",
+  "description": "Web Chatting with Socket.IO",
+  "main": "src/server.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "http": "^0.0.1-security",
+    "socket.io": "^3.1.1",
+    "socket.io-redis": "^6.0.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Minsoo Kim",
+  "license": "ISC"
+}
