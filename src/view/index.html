@@ -197,7 +197,7 @@
 				});
 
 
-				// 메세지 창에서 엔터키를 눌렀을 때 메세지 전송
+				// 메세지 창에서 엔터키를 눌렀을 때 이벤트
 				$("#messageInput").keypress(function(evt) {
 					var msg = $(evt.target).val();
 					if (evt.which == 13) {
@@ -206,6 +206,7 @@
 					}
 				});
 				
+				// 메세지 전송 버튼 클릭 이벤트
 				$("#btnSendMsg").click(function() {
 					var msg = $("#messageInput").val();
 					var image = $("#imageInput").val();
@@ -214,11 +215,14 @@
 					sendMessage(msg);
 				});
 
+				// 이미지 첨부 이벤트
+				$("#imageInput").change(function(){
+					sendImage(this.files[0]);
+				});
+
+				// 이미지 전송 버튼 이벤트
 				$("#btnSendImage").click(function(){
 					$("#imageInput").click();
-					$("#imageInput").change(function(){
-						sendImage(this.files[0]);
-					});
 				});
 				
 				// 창을 닫으면 퇴장 처리
@@ -228,10 +232,9 @@
 					}
 				});
 				
-				
-
 			});
 
+			// 참여하기 버튼 이벤트
 			function joinRoom(roomId) {
 				$("#usernameContainer").modal('show');
 				$("#btnEnter").click(function(){
@@ -239,6 +242,7 @@
 				});
 			}
 
+			// 방 입장처리
 			function enterRoom(roomId) {
 				var username = $("#username").val();
 				if (username != '') {
@@ -316,7 +320,8 @@
 						'senderName' : myUsername,
 						'image' : base64Binary
 					}
-					socket.emit('image', data);
+					console.log('[image] parameter : ', data);
+					socket.emit(api, parameter);
 				}
 				fileReader.readAsDataURL(imgFile);
 			}
@@ -328,7 +333,7 @@
 			}
 
 		</script>
-		
+
 	</head>
 	
 	<body>

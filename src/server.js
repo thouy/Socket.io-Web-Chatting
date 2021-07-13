@@ -1,7 +1,8 @@
 const redisIp = '192.168.217.132';
 const redisPort = '6379';
-
 const express = require('express');
+const { mainModule } = require('process');
+
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
@@ -80,7 +81,7 @@ io.on('connection', function(socket) {
 
 	// Transfer text
 	socket.on('chat', (data) => {
-		console.log('>>> chat param ', data);
+		console.log('>>> [chat] parameter : ', data);
 		let roomId = data.roomId;
 		let from = data.from;
 		let to = data.to;
@@ -92,7 +93,7 @@ io.on('connection', function(socket) {
 		// console.log("fromUser", fromUser);
 		// console.log("toUser", toUser);
 		
-		var param = {
+		var response = {
 			'type' : to == null ? 'message' : 'whisper',
 			'from' : from,
 			'fromName' : fromUser.username,
@@ -101,16 +102,17 @@ io.on('connection', function(socket) {
 			'msg' : message,
 			'time' : Date.now()
 		};
-		console.log('>>>> chat_resv response data', param);
+		console.log('>>> [chat] response : ', response);
 
-		var sendTarget = to != null ? to : roomId;
-		socket.to(sendTarget).emit('chat_recv', param);
-		// io.to(roomId).emit('chat_recv', param);
+		var target = to != null ? to : roomId;
+		console.log('>>> [chat] target', target);
+		socket.to(target).emit('chat_recv', response);
+		// io.to(roomId).emit('chat_recv', response);
 	});
 
 	// Transfer image binary
 	socket.on('image', function(data) {
-		console.log('>>> image param ', data);
+		console.log('>>> [image] parameter : ', data);
 		let roomId = data.roomId;
 		let image = data.image;
 		const senderSocket = io.of("/").sockets.get(data.sender);
@@ -121,8 +123,9 @@ io.on('connection', function(socket) {
 			'buffer' : image.toString('base64'),
 			'time' : Date.now()
 		};
-		socket.to(roomId).emit('image_recv', imageData);
-		
+		var target = to != null ? to : roomId;
+		console.log(">>> [image] target : ", target);
+		socket.to(target).emit('image_recv', imageData);
 	});
 
 	// WebRTC 시그널링 처리용
@@ -152,9 +155,9 @@ io.on('connection', function(socket) {
 	
 	// Exit room
 	socket.on('exitRoom', function(roomId) {
-		console.log(">>> exitRoom param ", roomId);
+		console.log(">>> [exitRoom] parameter : ", roomId);
 		socket.leave(roomId);
-		console.log(">>>> exitRoom", socket.id, socket.username);
+		console.log(">>> [exitRoom] socket info : ", socket.id, socket.username);
 
 		var userList = io.sockets.adapter.rooms.get(roomId);  // Set Object, Room participant list.
 
