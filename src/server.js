@@ -44,18 +44,18 @@ io.on('connection', function(socket) {
 			if (key.indexOf('room') == 0)
 				roomList.push(key)
 		});
-		console.log('>>>> roomList response data', roomList);
+		console.log('>> [roomList] response : ', roomList);
 		io.emit('roomList', roomList);
 	});
 
 	// Enter room
 	socket.on('enterRoom', (data) => {
-		// console.log('>>> enterRoom param : ', data);
+		console.log('>>> [enterRoom] parameter : ', data);
 		var roomId = data.roomId ? data.roomId : 'room' + Math.floor(Math.random() * 1000) + 1;
 		
 		socket.username = data.username;
 		socket.join(roomId);
-		console.log('>>> Entered room : ', roomId);
+		console.log('>>> [enterRoom] roomId : ', roomId);
 
 		var userList = io.sockets.adapter.rooms.get(roomId);  // Set Object, Room participant list.
 		var userInfoList = [];
@@ -81,7 +81,7 @@ io.on('connection', function(socket) {
 
 	// Transfer text
 	socket.on('chat', (data) => {
-		console.log('>>> [chat] parameter : ', data);
+		console.log('>>>>> [chat] parameter : ', data);
 		let roomId = data.roomId;
 		let from = data.from;
 		let to = data.to;
@@ -102,17 +102,17 @@ io.on('connection', function(socket) {
 			'msg' : message,
 			'time' : Date.now()
 		};
-		console.log('>>> [chat] response : ', response);
+		console.log('>>>>> [chat] response : ', response);
 
 		var target = to != null ? to : roomId;
-		console.log('>>> [chat] target', target);
+		console.log('>>>>> [chat] target', target);
 		socket.to(target).emit('chat_recv', response);
 		// io.to(roomId).emit('chat_recv', response);
 	});
 
 	// Transfer image binary
-	socket.on('image', function(data) {
-		console.log('>>> [image] parameter : ', data);
+	socket.on('image', (data) => {
+		console.log('>>>>>> [image] parameter : ', data);
 		let roomId = data.roomId;
 		let image = data.image;
 		const senderSocket = io.of("/").sockets.get(data.sender);
@@ -124,7 +124,7 @@ io.on('connection', function(socket) {
 			'time' : Date.now()
 		};
 		var target = to != null ? to : roomId;
-		console.log(">>> [image] target : ", target);
+		console.log(">>>>>> [image] target : ", target);
 		socket.to(target).emit('image_recv', imageData);
 	});
 
@@ -155,13 +155,13 @@ io.on('connection', function(socket) {
 	
 	// Exit room
 	socket.on('exitRoom', function(roomId) {
-		console.log(">>> [exitRoom] parameter : ", roomId);
+		console.log(`>>>>>>>>> [exitRoom] parameter : ${roomId}`);
 		socket.leave(roomId);
-		console.log(">>> [exitRoom] socket info : ", socket.id, socket.username);
+		console.log(`>>>>>>>>> [exitRoom] socket.id : ${socket.id} socket.username : ${socket.username}`);
 
 		var userList = io.sockets.adapter.rooms.get(roomId);  // Set Object, Room participant list.
 
-		var userInfoList = [];
+		var response = [];
 		if (typeof userList != 'undefined' ) {
 			userList.forEach((value) => {
 				let socketData = io.of("/").sockets.get(value);
@@ -169,10 +169,10 @@ io.on('connection', function(socket) {
 					'userId' : value,
 					'username' : socketData.username
 				};
-				userInfoList.push(userInfo);
+				response.push(userInfo);
 			});
 		}
-		
-		io.emit('exitRoom', userInfoList);
+		console.log(">>>>>>>>> [exitRoom] response : ", response)
+		io.emit('exitRoom', response);
 	});
 });

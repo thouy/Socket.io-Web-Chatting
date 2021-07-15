@@ -215,10 +215,39 @@
 					sendMessage(msg);
 				});
 
+
+				var fileReader = new FileReader();
+				fileReader.onload = function(e) {
+					const base64Binary = e.target.result.replace(/.*base64,/, '');
+
+					var html =
+						"<div class=\"chat-message-right mb-4\">\
+							<div>\
+								<img src=\"/res/images/user_default_thumb.png\" class=\"rounded-circle mr-1\" alt=\"" + myUsername +"\" width=\"40\" height=\"40\">\
+								<div class=\"text-muted small text-nowrap mt-2\">"+ new Date().toLocaleTimeString() + "</div>\
+							</div>\
+							<div class=\"flex-shrink-1 bg-light rounded py-2 px-3 mr-3\">\
+								<div class=\"font-weight-bold mb-1\">" + myUsername + "</div><img src=\"data:image/png;base64," + base64Binary + "\" style=\"width:120px;\"></div>\
+						</div>";
+					$("#chat-message-container").append(html);
+
+					var data = {
+						'roomId' : myRoomId,
+						'sender' : myUserId,
+						'senderName' : myUsername,
+						'image' : base64Binary
+					}
+					console.log('[image] parameter : ', data);
+					socket.emit('image', data);
+				}
 				// 이미지 첨부 이벤트
-				$("#imageInput").change(function(){
-					sendImage(this.files[0]);
-				});
+				document.getElementById("imageInput").addEventListener('change', function(){
+					//sendImage(this.files[0]);
+					var imgFile = this.files[0];
+					
+					fileReader.readAsDataURL(imgFile);
+
+				}, false);
 
 				// 이미지 전송 버튼 이벤트
 				$("#btnSendImage").click(function(){
@@ -227,7 +256,8 @@
 				
 				// 창을 닫으면 퇴장 처리
 				$(window).unload(function() {
-					if (socket != null || typeof socket == 'undefined') {
+					console.log(socket);
+					if (myRoomId != null) {
 						socket.emit('exitRoom', myRoomId);
 					}
 				});
@@ -321,7 +351,14 @@
 						'image' : base64Binary
 					}
 					console.log('[image] parameter : ', data);
-					socket.emit(api, parameter);
+					socket.emit('image', data);
+					var testData = {
+						'roomId' : myRoomId,
+						'from' : myUserId,
+						'to' : null,
+						'msg' : 'testtttt'
+					};
+					socket.emit('chat', testData);
 				}
 				fileReader.readAsDataURL(imgFile);
 			}
