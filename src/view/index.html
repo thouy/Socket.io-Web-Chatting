@@ -29,7 +29,7 @@
 				$("#chattingContainer").hide();
 				
 				// socket.io client initialize..
-				socket = io.connect('http://127.0.0.1:3000');
+				socket = io.connect(location.host);
 
 				socket.emit('roomList', null);
 
@@ -86,8 +86,9 @@
 					$("#userListContainer").append(htmlHr);
 				});
 				
+				// 채팅 수신 시 화면 렌더링
 				socket.on('chat_recv', (data) => {
-					console.log('Chat received : ', data);
+					console.log('chat_recv : ', data);
 					var messageType = data.type;
 					var fromName = data.fromName;
 					var toName = data.toName;
@@ -106,6 +107,18 @@
 					$("#chat-message-container").append(html);
 				});
 
+				socket.on('metadata_recv', (data) => {
+					console.log('metadata_recv : ', data);
+					var html = 
+						"<div class=\"flex-shrink-1 bg-light rounded py-2 px-3 mr-3\">\
+								<div class=\"font-weight-bold mb-1\">\
+									<a href=\"" + data['url'] + "\" target=\"_blank\">" + data['title'] + "</a>\
+								</div>\
+								<img src=\"" + data['image'] + "\" style=\"width:120px;\">" + data['description'] + "</div>";
+					$("#chat-message-container").append(html);
+				});
+
+				// 이미지 데이터 수신 시 화면 렌더링
 				socket.on('image_recv', (data) => {
 					console.log("Image received : ", data);
 					var html =

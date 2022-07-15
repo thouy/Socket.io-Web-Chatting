@@ -4,9 +4,13 @@
   "description": "Web Chatting with Socket.IO",
   "main": "src/server.js",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "fetch-meta-tags": "^1.0.10",
     "http": "^0.0.1-security",
+    "metaget": "^1.0.7",
+    "node-fetch": "^2.6.7",
     "socket.io": "^3.1.1",
     "socket.io-redis": "^6.0.1",
     "uuid": "^8.3.2"
